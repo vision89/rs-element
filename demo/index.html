@@ -28,7 +28,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <rs-element id="rsobject" rs-object="{{remoteStorage}}" rs-class="{{RemoteStorage}}">
       </rs-element>
       
-      <rs-document id="rsdocument" doc="{{doc}}" rs-object="[[remoteStorage]]" path="test/docs"
+      <rs-document id="rsdocument" value="{{doc}}" rs-object="[[remoteStorage]]" path="test/docs"
       doc-id="testdoc" on-error="docError"></rs-document>
       
       Let's add a text property to our doc:

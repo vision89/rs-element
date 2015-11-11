@@ -1,0 +1,260 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<script type="text/javascript" src="../remotestorage-modules/dist/documents.js"></script>
+<!--
+An element accessing the remote storage document module declaratively
+
+Example:
+
+    <rs-collection doc="{{doc}}" rs-object="rs"></rs-collection>
+
+@group Seed Elements
+@element rs-element
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="rs-collection">
+
+  <template>
+    
+    <style>
+    
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
+  
+    </style>
+    
+  </template>
+
+</dom-module>
+
+<script>
+
+  ( function () {
+    
+    var collectionProp = '_collection';
+    
+    Polymer({
+
+      is: 'rs-collection',
+  
+      properties: {
+        
+        /**
+         * Remote storage object, this is also on global as remoteStorage
+         */ 
+        rsObject: {
+          
+          type: Object,
+          value: null,
+          notify: false,
+          reflectToAttribute: false
+          
+        },
+        
+        /**
+         * The value of the document held in the private _collectionProp
+         */ 
+        value: {
+          
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_save'
+          
+        },
+        
+        /**
+         * Path to the document
+         */
+        path: {
+          
+          type: String,
+          value: '',
+          norify: false,
+          reflectToAttribute: false
+          
+        },
+        
+        /**
+         * Id used to identify the document
+         */ 
+        docId: {
+          type: String,
+          value: '',
+          notify: false,
+          reflectToAttribute: false
+          
+        }
+  
+      },
+  
+      // Element Lifecycle
+  
+      ready: function() {
+        // `ready` is called after all elements have been configured, but
+        // propagates bottom-up. This element's children are ready, but parents
+        // are not.
+        //
+        // This is the point where you should make modifications to the DOM (when
+        // necessary), or kick off any processes the element wants to perform.
+      },
+  
+      attached: function() {
+        // `attached` fires once the element and its parents have been inserted
+        // into a document.
+        //
+        // This is a good place to perform any work related to your element's
+        // visual state or active behavior (measuring sizes, beginning animations,
+        // loading resources, etc).
+        
+        //These are attached to global as well but I really don't like accessing stuff that way
+        
+        //Kickstart the module
+        this.rsObject.access.claim('documents', 'rw');
+        
+        //Set public doc
+        //that._publicDoc = that.rsObject.documents.publicList( that.path );
+        
+        //Set private doc
+        this._privateDoc = this.rsObject.documents.privateList( this.path );
+        
+        this.get( this.docId );
+        
+      },
+  
+      detached: function() {
+        // The analog to `attached`, `detached` fires when the element has been
+        // removed from a document.
+        //
+        // Use this to clean up anything you did in `attached`.
+        
+        this.doc = null;
+        //this._publicDoc = null;
+        this._privateDoc = null;
+        
+      },
+      
+      /**
+       * Gets the document at the patch
+       */ 
+      get: function ( id ) {
+        
+        var that = this;
+        
+        //do a private get
+        that._privateDoc.get( id ).then( function ( val ) {
+          
+          that.set( 'value', val[collectionProp] || [] );
+          
+          if ( val.@context ) {
+            
+            that._context = val.@context;
+            
+          }
+          
+        }, function ( err ) {
+          
+          that.fire( 'error', err );
+          
+        });
+        
+      },
+      
+      /**
+       * Remove all the elements in an array
+       */ 
+      removeAll: function () {
+        
+        var that = this;
+        
+        this._privateDoc.set( this.docId, {} ).then( function () {
+          
+          that.set( 'value', [] );
+          
+        }, function ( err ) {
+          
+          that.fire( 'error', err );
+          
+        });
+        
+      },
+      
+      /**
+       * Save the collection
+       */ 
+      _save: function () {
+        
+        var that = this;
+        
+        var doc = this._document;
+        
+        this._privateDoc.set( this.docId, doc ).then( function ( val ) {
+          
+          that.set( 'value', val[_collectionProp] );
+          this._context = val.@context;
+          
+        }, function ( err ) {
+          
+          that.fire( 'error', err );
+          
+        });
+        
+      },
+      
+      /**
+       * Formats the collection as a document
+       */ 
+      _document: function () {
+        
+        var that = this;
+        
+        var doc = {
+          
+          id: that.docId,
+          
+        };
+        
+        if ( this._context ) {
+          
+          doc.@context = this._context;
+          
+        }
+        
+        doc[_collectionProp] = this.value;
+        
+        return doc;
+        
+      },
+      
+      /**
+       * Reference to the public rs document
+       */ 
+      //_publicDoc: null,
+      
+      /**
+       * Reference to the private ts document
+       */ 
+      _privateDoc: null,
+      
+      /**
+       * Context as it is on the document
+       */ 
+      _context: undefined
+      
+  });
+    
+  })();
+
+</script>

@@ -45,7 +45,10 @@ Example:
     is: 'rs-document',
 
     properties: {
-
+      
+      /**
+       * Remote storage object, this is also on global as remoteStorage
+       */ 
       rsObject: {
         
         type: Object,
@@ -55,14 +58,21 @@ Example:
         
       },
       
-      doc: {
+      /**
+       * The value of the document
+       */ 
+      value: {
         
         type: Object,
         value: {},
-        notify: true
+        notify: true,
+        reflectToAttribute: true
         
       },
       
+      /**
+       * Path to the document
+       */ 
       path: {
         
         type: String,
@@ -72,6 +82,9 @@ Example:
         
       },
       
+      /**
+       * Id used to identify the document
+       */ 
       docId: {
         type: String,
         value: '',
@@ -138,7 +151,7 @@ Example:
       //do a private get
       that._privateDoc.get( id ).then( function ( val ) {
         
-        that.set( 'doc', val || {} );
+        that.set( 'value', val || {} );
         
       }, function ( err ) {
         
@@ -155,9 +168,9 @@ Example:
       
       var that = this;
       
-      this._privateDoc.set( this.docId, this.doc ).then( function ( val ) {
+      this._privateDoc.set( this.docId, this.value ).then( function ( val ) {
         
-        that.set( 'doc', val ); 
+        that.set( 'value', val ); 
         
       }, function ( err ) {
         
@@ -176,7 +189,7 @@ Example:
       
       this._privateDoc.set( this.docId, {} ).then( function ( val ) {
         
-        that.set( 'doc', val ); 
+        that.set( 'value', val ); 
         
       }, function ( err ) {
         
