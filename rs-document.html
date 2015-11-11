@@ -59,9 +59,7 @@ Example:
         
         type: Object,
         value: {},
-        notify: true,
-        reflectToAttribute: true,
-        observer: _updateDoc
+        notify: true
         
       },
       
@@ -70,6 +68,14 @@ Example:
         type: String,
         value: '',
         norify: false,
+        reflectToAttribute: false
+        
+      },
+      
+      docId: {
+        type: String,
+        value: '',
+        notify: false,
         reflectToAttribute: false
         
       }
@@ -97,18 +103,16 @@ Example:
       
       //These are attached to global as well but I really don't like accessing stuff that way
       
-      var that = this;
-      
       //Kickstart the module
-      that.rsObject.access.claim('documents', 'rw');
+      this.rsObject.access.claim('documents', 'rw');
       
       //Set public doc
       //that._publicDoc = that.rsObject.documents.publicList( that.path );
       
       //Set private doc
-      that._privateDoc = that.rsObject.documents.privateList( that.path );
+      this._privateDoc = this.rsObject.documents.privateList( this.path );
       
-      that._get();
+      this.get( this.docId );
       
     },
 
@@ -127,12 +131,52 @@ Example:
     /**
      * Gets the document at the patch
      */ 
-    _get: function () {
+    get: function ( id ) {
+      
+      var that = this;
       
       //do a private get
-      that._privateDoc.getObject( that.path ).then( function ( val ) {
+      that._privateDoc.get( id ).then( function ( val ) {
         
-        that._doc = val || {};
+        that.set( 'doc', val || {} );
+        
+      }, function ( err ) {
+        
+        that.fire( 'error', err );
+        
+      });
+      
+    },
+    
+    /**
+     * Save the doc
+     */ 
+    save: function () {
+      
+      var that = this;
+      
+      this._privateDoc.set( this.docId, this.doc ).then( function ( val ) {
+        
+        that.set( 'doc', val ); 
+        
+      }, function ( err ) {
+        
+        that.fire( 'error', err );
+        
+      });
+      
+    },
+    
+    /**
+     * Removes the document with the specified id
+     */ 
+    remove: function () {
+      
+      var that = this;
+      
+      this._privateDoc.set( this.docId, {} ).then( function ( val ) {
+        
+        that.set( 'doc', val ); 
         
       }, function ( err ) {
         
@@ -150,53 +194,8 @@ Example:
     /**
      * Reference to the private ts document
      */ 
-    _privateDoc: null,
+    _privateDoc: null
     
-    /**
-     * Observer that adds/updates/deletes doc
-     */ 
-    _updateDoc: function ( newVal, oldVal ) {
-      
-      if ( this._isEmpty( newVal ) && !this._isEmpty( oldVal ) ) {
-        //Object was deleted
-        
-      } else if ( !this._isEmpty( newVal ) && this._isEmpty( oldVal ) ) {
-        //Object was added
-        
-      } else {
-        //Object was deleted
-        
-      }
-      
-    },
-    
-    /**
-     * States if an object is empty
-     */ 
-    _isEmpty: function ( map ) {
-      
-      if ( map === undefined || map === null ) {
-        
-        return true;
-        
-      }
-      
-       for(var key in map) {
-         
-          if (map.hasOwnProperty(key)) {
-             
-             return false;
-          
-            
-          }
-          
-       }
-       
-       return true;
-     
-    } 
-}
-
-  });
+});
 
 </script>

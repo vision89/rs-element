@@ -16,6 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../rs-element.html">
     <link rel="import" href="../rs-document.html">
+    <link rel="import" href="../../paper-input/paper-input.html">
+    <link rel="import" href="../../paper-button/paper-button.html">
   </head>
   <body unresolved>
 
@@ -23,11 +25,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     <template is="dom-bind" id="app">
       
-      <rs-element rs-object="{{remoteStorage}}" rs-class="{{RemoteStorage}}">
+      <rs-element id="rsobject" rs-object="{{remoteStorage}}" rs-class="{{RemoteStorage}}">
       </rs-element>
       
-      <rs-document doc="{{doc}}" rs-object="[[remoteStorage]]" path="test/docs"
-      on-error="docError"></rs-document>
+      <rs-document id="rsdocument" doc="{{doc}}" rs-object="[[remoteStorage]]" path="test/docs"
+      doc-id="testdoc" on-error="docError"></rs-document>
+      
+      Let's add a text property to our doc:
+      
+      <p style="width:50%;margin-left:auto;margin-right:auto;">
+        
+        <paper-input value="{{doc.text}}" label="Add some text"></paper-input>
+        
+      </p>
+      
+      <p style="text-align:center;">
+        
+        <paper-button on-click="save" raised>Save</paper-button> <paper-button on-click="remove" raised>Remove</paper-button>
+        
+      </p>  
       
     </template>
 
@@ -44,6 +60,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             
             console.log( 'There was a doc error:' );
             console.log( err );
+            
+          };
+          
+          app.save = function () {
+          
+            app.set( 'doc.text', app.doc.text );
+            app.set( 'doc.id', 'test-document' );
+            
+            app.$.rsdocument.save();
+          
+          };
+          
+          app.remove = function () {
+            
+            app.$.rsdocument.remove();
             
           };
           
