@@ -1,0 +1,53 @@
+<script>
+  
+  var rsBehaviors = rsBehaviors || {};
+  
+  rsBehaviors.baseBehavior = {
+    
+    properties: {
+      
+      /**
+       * Remote storage object, this is also on global as remoteStorage
+       */ 
+      rsObject: {
+        
+        type: Object,
+        value: null,
+        notify: false,
+        reflectToAttribute: false
+        
+      },
+      
+      /**
+       * Path to the document
+       */ 
+      path: {
+        
+        type: String,
+        value: '',
+        norify: false,
+        reflectToAttribute: false
+        
+      },
+      
+      /**
+       * Id used to identify the document
+       */ 
+      docId: {
+        type: String,
+        value: '',
+        notify: false,
+        reflectToAttribute: false
+        
+      }
+      
+    },
+    
+    /**
+     * Reference to the private ts document
+     */ 
+    _privateDoc: null
+    
+  };
+  
+</script>

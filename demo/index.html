@@ -16,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../rs-element.html">
     <link rel="import" href="../rs-document.html">
+    <link rel="import" href="../rs-collection.html">
     <link rel="import" href="../../paper-input/paper-input.html">
     <link rel="import" href="../../paper-button/paper-button.html">
   </head>
@@ -31,7 +32,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <rs-document id="rsdocument" value="{{doc}}" rs-object="[[remoteStorage]]" path="test/docs"
       doc-id="testdoc" on-error="docError"></rs-document>
       
-      Let's add a text property to our doc:
+      <rs-collection id="rscollection" value="{{doccol}}" rs-object="[[remoteStorage]]" path="text/collections"
+      doc-id="testcollection" on-error="colError"></rs-collection>
+      
+      Let's add a text property to our <code>&lt;rs-document&gt;</code>:
       
       <p style="width:50%;margin-left:auto;margin-right:auto;">
         
@@ -43,7 +47,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         
         <paper-button on-click="save" raised>Save</paper-button> <paper-button on-click="remove" raised>Remove</paper-button>
         
-      </p>  
+      </p>
+      
+      <br />
+      <br />
+      
+      <p>
+        
+        Now let's add text to our <code>&lt;rs-collection&gt;</code>
+        
+      </p>
+      
+      <p style="width:50%;margin-left:auto;margin-right:auto;">
+        
+        <paper-input value="{{text}}" label="Add some text"></paper-input>
+        
+      </p>
+      
+      <p style="text-align:center;">
+        
+        <paper-button on-click="add" raised>Add</paper-button> <paper-button on-click="rem" raised>Remove</paper-button> 
+        <paper-button on-click="removeAll" raised>Remove All</paper-button>
+        
+      </p>
+      
+      <p>
+          
+        <b>Collection List:</b>
+        
+        <div style="border: 1px solid black; padding: 1em;">
+          
+          <ul>
+          
+            <template is="dom-repeat" items="[[doccol]]">
+              
+              <li><span>[[item]]</span></li>
+              
+            </template>
+          
+          </ul>
+          
+        </div>  
+        
+      </p>
       
     </template>
 
@@ -63,6 +109,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             
           };
           
+          app.colError = function ( err ) {
+            
+            console.log( 'There was a collection error:' );
+            console.log( err );
+            
+          };
+          
           app.save = function () {
           
             app.set( 'doc.text', app.doc.text );
@@ -78,14 +131,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             
           };
           
-          console.log( 'Remote Storage Class:' );
-          console.log( app.RemoteStorage );
+          app.add = function () {
+            
+            app.push( 'doccol', app.text );
+            app.text = '';
+            
+          };
           
-          console.log( 'Remote Storage Object:' );
-          console.log( app.remoteStorage );
+          app.rem = function () {
+            
+            var i = app.doccol.indexOf( app.text );
+            
+            if ( i > -1 ) {
+              
+              app.splice( 'doccol', i, 1 );
+              
+            }
+            
+            app.text = '';
+            
+          };
           
-          console.log( 'Doc' );
-          console.log( app.doc );
+          app.removeAll = function () {
+            
+            app.$.rscollection.removeAll();
+            
+          }
           
         });
         

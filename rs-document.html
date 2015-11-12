@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 <script type="text/javascript" src="../remotestorage-modules/dist/documents.js"></script>
+<link rel="import" href="./behaviors/rs-behaviors.html">
 <!--
 An element accessing the remote storage document module declaratively
 
@@ -39,24 +40,16 @@ Example:
 </dom-module>
 
 <script>
-
+  'use strict';
+  
   Polymer({
 
     is: 'rs-document',
+    
+    behaviors: [rsBehaviors.baseBehavior],
 
     properties: {
       
-      /**
-       * Remote storage object, this is also on global as remoteStorage
-       */ 
-      rsObject: {
-        
-        type: Object,
-        value: null,
-        notify: false,
-        reflectToAttribute: false
-        
-      },
       
       /**
        * The value of the document
@@ -68,31 +61,8 @@ Example:
         notify: true,
         reflectToAttribute: true
         
-      },
-      
-      /**
-       * Path to the document
-       */ 
-      path: {
-        
-        type: String,
-        value: '',
-        norify: false,
-        reflectToAttribute: false
-        
-      },
-      
-      /**
-       * Id used to identify the document
-       */ 
-      docId: {
-        type: String,
-        value: '',
-        notify: false,
-        reflectToAttribute: false
-        
       }
-
+      
     },
 
     // Element Lifecycle
@@ -135,7 +105,7 @@ Example:
       //
       // Use this to clean up anything you did in `attached`.
       
-      this.doc = null;
+      this.value = {};
       //this._publicDoc = null;
       this._privateDoc = null;
       
@@ -197,17 +167,12 @@ Example:
         
       });
       
-    },
+    }
     
     /**
      * Reference to the public rs document
      */ 
     //_publicDoc: null,
-    
-    /**
-     * Reference to the private ts document
-     */ 
-    _privateDoc: null
     
 });
 
